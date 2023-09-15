@@ -1,4 +1,6 @@
 import sys
+from simhash import Simhash
+import jieba.analyse
 
 
 # Custom exception class, inherited from Exception
@@ -14,8 +16,27 @@ def check_empty(file_content):
         raise EmptyTextException("One of the files is empty!")    
 
 
-def save_file():
-    pass
+def participle(content):
+    """
+    perform word segmentation and calculate weights
+    :param: text
+    :return: metatable in the form of(token, weight)
+    """
+    # Determine whether it is a string type
+    ???
+    # 今天也是可爱的调包侠哎嘿
+    jieba.analyse.set_stop_words('./CNstopwords.txt')
+    tags = jieba.analyse.extract_tags(content, topK=20, withWeight=True)
+    return tags
+
+
+def save_file(file_path, file_content):
+    # Determine whether it's a float type and whether the size is in [0, 1]
+    ???
+    # Open the file in write mode 'w'
+    with open(file_path, 'w') as file:
+        # Write content
+        file.write(file_content)
 
 
 def read_file(file_path):
@@ -27,23 +48,47 @@ def read_file(file_path):
             check_empty(file_content)        
     except FileNotFoundError:
         print(f"File '{file_path}' not found")
+        return FileNotFoundError
     except EmptyTextException as e:
         print(f"Caught custom exception: {e}")
+        return EmptyTextException
     except Exception as e:
         print(f"An error occurred: {e}")
+        return Exception
+    else:
+        return file_content
 
-
-def caculate_similarity(original_text, plagiarized_text):
-    pass
+def caculate_similarity(original_text_weight, plagiarized_text_weight):
+    """
+    get the similarity of two texts
+    :param text_a: original text
+    :param text_b: plagiarized text
+    :return: similarity
+    """
+    # Determine whether it's a list type
+    ???
+    o_simhash = Simhash(original_text_weight)
+    p_simhash = Simhash(plagiarized_text_weight)
+    max_hashbit = max(len(bin(o_simhash.value)), len(bin(p_simhash.value)))
+    # Hamming distance
+    distince = o_simhash.distance(p_simhash)
+    print(f"The hamming distance(they are similar when the value is less than 4): {distince}")
+    similar = 1 - distince / max_hashbit
+    return similar
 
 
 def main():
-    # Get the parameters of the command line
+    # Get the parameters of the command line``
     # Note that the first one is the script name
-    args = sys.argv
-    original_text_path = args[1]
-    plagiarized_text_path = args[2]
-    output_text_path = args[3]
+    # args = sys.argv
+    # original_text_path = args[1]
+    # plagiarized_text_path = args[2]
+    # output_text_path = args[3]
+
+    original_text_path = './ori.txt'
+    plagiarized_text_path = './orig_0.8_add.txt'
+    output_text_path = './output.txt'
+    args = [original_text_path, plagiarized_text_path, output_text_path]
 
     try:
         # Check whether the parameter is a character type
@@ -55,17 +100,15 @@ def main():
         return TypeError
     
     # Read file
-    original_text = read_file()
-    plagiarized_text = read_file()
+    original_text_weight = participle(read_file(original_text_path))
+    plagiarized_text_weight = participle(read_file(plagiarized_text_path))
     
-
-    # 计算相似度
-    pass
+    # caculate similarity
+    similarity = caculate_similarity(original_text_weight, plagiarized_text_weight)
     
-    # 输出结果到terminal
-    pass
+    # Output the result to the specified file
+    save_file(output_text_path, similarity)
 
 
-
-if __init__ == '__main__':
+if __name__ == '__main__':
     main()
