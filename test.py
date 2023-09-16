@@ -19,7 +19,7 @@ class TestStringMethods(unittest.TestCase):
 
     def test_caculate_ouput(self):
         s = caculate_similarity([('呵呵', 0.5), ('桀桀', 0.5)], [('在吗', 0.2), ('消愁', 0.8)])
-        self.assertEqual(s, 0.48484848484848486) # Output should be 0.48484848484848486
+        self.assertEqual(s, 0.48484848484848486)  # Output should be 0.48484848484848486
 
     def test_caculate_empty(self):
         s = caculate_similarity([], [])
@@ -34,7 +34,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(s, EmptyException)
 
     def test_read_fileNotFound(self):
-        s = read_file('我路径呢?')
+        s = read_file('where are you now')
         self.assertEqual(s, FileNotFoundError)
 
     def test_read_empty(self):

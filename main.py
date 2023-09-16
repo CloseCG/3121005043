@@ -36,7 +36,7 @@ def participle(content):
         tags = jieba.analyse.extract_tags(content, topK=20, withWeight=True)
         return tags
     except TypeError:
-        print("I say string! You understand?");
+        print("I say string! You understand?")
         return TypeError
     except EmptyException as e:
         print(f"Caught custom exception: {e}")
