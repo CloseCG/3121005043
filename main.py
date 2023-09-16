@@ -3,19 +3,21 @@ from simhash import Simhash
 import jieba.analyse
 import logging
 
+
 jieba.setLogLevel(logging.INFO) # Shut the fk up!
 
+
 # Custom exception class, inherited from Exception
-class EmptyTextException(Exception):
+class EmptyException(Exception):
     def __init__(self, *args: object) -> None:
         # Call the constructor of the parent class and pass the exception message
         super().__init__(*args)
 
 
 # Raise a custom exception in this function
-def check_empty(file_content):
-    if not file_content:
-        raise EmptyTextException("One of the files is empty!")    
+def check_empty(content):
+    if not content:
+        raise EmptyException("There is an empty value in your input!")    
 
 
 def participle(content):
@@ -28,6 +30,7 @@ def participle(content):
     try:
         if not isinstance(content, str):
             raise TypeError
+        check_empty(content)
         # 今天也是可爱的调包侠哎嘿
         jieba.analyse.set_stop_words('./CNstopwords.txt')
         tags = jieba.analyse.extract_tags(content, topK=20, withWeight=True)
@@ -35,7 +38,9 @@ def participle(content):
     except TypeError:
         print("I say string! You understand?");
         return TypeError
-
+    except EmptyException as e:
+        print(f"Caught custom exception: {e}")
+        return EmptyException
 
 
 def save_file(file_path, file_content):
@@ -67,9 +72,9 @@ def read_file(file_path):
     except FileNotFoundError:
         print(f"File '{file_path}' not found")
         return FileNotFoundError
-    except EmptyTextException as e:
+    except EmptyException as e:
         print(f"Caught custom exception: {e}")
-        return EmptyTextException
+        return EmptyException
     except Exception as e:
         print(f"An error occurred: {e}")
         return Exception
@@ -89,6 +94,8 @@ def caculate_similarity(original_text_weight, plagiarized_text_weight):
     try:
         if not isinstance(original_text_weight, list) or not isinstance(plagiarized_text_weight, list):
             raise TypeError
+        check_empty(original_text_weight)
+        check_empty(plagiarized_text_weight)
         o_simhash = Simhash(original_text_weight)
         p_simhash = Simhash(plagiarized_text_weight)
         max_hashbit = max(len(bin(o_simhash.value)), len(bin(p_simhash.value)))
@@ -98,21 +105,19 @@ def caculate_similarity(original_text_weight, plagiarized_text_weight):
         similar = 1 - distince / max_hashbit
         return similar
     except TypeError:
+        print("I say list! You understand?")
         return TypeError
+    except EmptyException as e:
+        print(f"Caught custom exception: {e}")
+        return EmptyException
 
 
-def main():
-    # Get the parameters of the command line``
+def main(args):
+    # Get the parameters of the command line
     # Note that the first one is the script name
-    # args = sys.argv
-    # original_text_path = args[1]
-    # plagiarized_text_path = args[2]
-    # output_text_path = args[3]
-
-    original_text_path = './orig.txt'
-    plagiarized_text_path = './orig_0.8_add.txt'
-    output_text_path = './output.txt'
-    args = [original_text_path, plagiarized_text_path, output_text_path]
+    original_text_path = args[1]
+    plagiarized_text_path = args[2]
+    output_text_path = args[3]
 
     try:
         # Check whether the parameter is a character type
@@ -129,10 +134,13 @@ def main():
     
     # caculate similarity
     similarity = caculate_similarity(original_textLweight, plagiarized_textLweight)
-    
+
     # Output the result to the specified file
     save_file(output_text_path, similarity)
+    
+    return 1 # succeed mark
 
 
 if __name__ == '__main__':
-    main()
+    args = sys.argv
+    main(args)
