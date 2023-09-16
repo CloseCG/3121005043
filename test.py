@@ -14,7 +14,7 @@ class TestStringMethods(unittest.TestCase):
             check_empty('')
 
     def test_caculate_type(self):
-        s = caculate_similarity('我你他', '什么档次')
+        s = caculate_similarity('元氏人', '什么档次')
         self.assertEqual(s, TypeError)
 
     def test_caculate_ouput(self):
@@ -23,7 +23,7 @@ class TestStringMethods(unittest.TestCase):
 
     def test_caculate_empty(self):
         s = caculate_similarity([], [])
-        self.assertEqual(s, EmptyException) # Output should be 0.48484848484848486
+        self.assertEqual(s, EmptyException)
 
     def test_participle_type(self):
         s = participle(1)
