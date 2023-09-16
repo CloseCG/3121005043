@@ -1,7 +1,9 @@
 import sys
 from simhash import Simhash
 import jieba.analyse
+import logging
 
+jieba.setLogLevel(logging.INFO) # Shut the fk up!
 
 # Custom exception class, inherited from Exception
 class EmptyTextException(Exception):
@@ -23,20 +25,36 @@ def participle(content):
     :return: metatable in the form of(token, weight)
     """
     # Determine whether it is a string type
-    ???
-    # 今天也是可爱的调包侠哎嘿
-    jieba.analyse.set_stop_words('./CNstopwords.txt')
-    tags = jieba.analyse.extract_tags(content, topK=20, withWeight=True)
-    return tags
+    try:
+        if not isinstance(content, str):
+            raise TypeError
+        # 今天也是可爱的调包侠哎嘿
+        jieba.analyse.set_stop_words('./CNstopwords.txt')
+        tags = jieba.analyse.extract_tags(content, topK=20, withWeight=True)
+        return tags
+    except TypeError:
+        print("I say string! You understand?");
+        return TypeError
+
 
 
 def save_file(file_path, file_content):
     # Determine whether it's a float type and whether the size is in [0, 1]
-    ???
-    # Open the file in write mode 'w'
-    with open(file_path, 'w') as file:
-        # Write content
-        file.write(file_content)
+    try:
+        if not isinstance(file_content, float):
+            raise TypeError
+        if file_content < 0 or file_content > 1:
+            raise ValueError
+        # Open the file in write mode 'w'
+        with open(file_path, 'w') as file:
+            # Write content
+            file.write("{:.2f}".format(file_content))
+    except TypeError:
+        print("I say float! You understand")
+        return TypeError
+    except ValueError:
+        print("Keep your value in [0, 1]!")
+        return ValueError
 
 
 def read_file(file_path):
@@ -58,6 +76,7 @@ def read_file(file_path):
     else:
         return file_content
 
+
 def caculate_similarity(original_text_weight, plagiarized_text_weight):
     """
     get the similarity of two texts
@@ -65,16 +84,21 @@ def caculate_similarity(original_text_weight, plagiarized_text_weight):
     :param text_b: plagiarized text
     :return: similarity
     """
-    # Determine whether it's a list type
-    ???
-    o_simhash = Simhash(original_text_weight)
-    p_simhash = Simhash(plagiarized_text_weight)
-    max_hashbit = max(len(bin(o_simhash.value)), len(bin(p_simhash.value)))
-    # Hamming distance
-    distince = o_simhash.distance(p_simhash)
-    print(f"The hamming distance(they are similar when the value is less than 4): {distince}")
-    similar = 1 - distince / max_hashbit
-    return similar
+    # Determine whether it's a list type. About the source code, here is a list
+    # with the meta-group as the element
+    try:
+        if not isinstance(original_text_weight, list) or not isinstance(plagiarized_text_weight, list):
+            raise TypeError
+        o_simhash = Simhash(original_text_weight)
+        p_simhash = Simhash(plagiarized_text_weight)
+        max_hashbit = max(len(bin(o_simhash.value)), len(bin(p_simhash.value)))
+        # Hamming distance
+        distince = o_simhash.distance(p_simhash)
+        print(f"The hamming distance(they are similar when the value is less than 4): {distince}")
+        similar = 1 - distince / max_hashbit
+        return similar
+    except TypeError:
+        return TypeError
 
 
 def main():
@@ -85,7 +109,7 @@ def main():
     # plagiarized_text_path = args[2]
     # output_text_path = args[3]
 
-    original_text_path = './ori.txt'
+    original_text_path = './orig.txt'
     plagiarized_text_path = './orig_0.8_add.txt'
     output_text_path = './output.txt'
     args = [original_text_path, plagiarized_text_path, output_text_path]
@@ -100,11 +124,11 @@ def main():
         return TypeError
     
     # Read file
-    original_text_weight = participle(read_file(original_text_path))
-    plagiarized_text_weight = participle(read_file(plagiarized_text_path))
+    original_textLweight = participle(read_file(original_text_path))
+    plagiarized_textLweight = participle(read_file(plagiarized_text_path))
     
     # caculate similarity
-    similarity = caculate_similarity(original_text_weight, plagiarized_text_weight)
+    similarity = caculate_similarity(original_textLweight, plagiarized_textLweight)
     
     # Output the result to the specified file
     save_file(output_text_path, similarity)
