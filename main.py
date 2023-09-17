@@ -4,14 +4,14 @@ import jieba.analyse
 import logging
 
 
-jieba.setLogLevel(logging.INFO) # Shut the fk up!
+jieba.setLogLevel(logging.INFO)  # Shut the fk up!
 
 
 # Custom exception class, inherited from Exception
 class EmptyException(Exception):
-    def __init__(self, *args: object) -> None:
+    def __init__(self, *a: object) -> None:
         # Call the constructor of the parent class and pass the exception message
-        super().__init__(*args)
+        super().__init__(*a)
 
 
 # Raise a custom exception in this function
@@ -82,11 +82,11 @@ def read_file(file_path):
         return file_content
 
 
-def caculate_similarity(original_text_weight, plagiarized_text_weight):
+def calculate_similarity(original_text_weight, plagiarized_text_weight):
     """
     get the similarity of two texts
-    :param text_a: original text
-    :param text_b: plagiarized text
+    :param original_text_weight: original text
+    :param plagiarized_text_weight: plagiarized text
     :return: similarity
     """
     # Determine whether it's a list type. About the source code, here is a list
@@ -98,11 +98,11 @@ def caculate_similarity(original_text_weight, plagiarized_text_weight):
         check_empty(plagiarized_text_weight)
         o_simhash = Simhash(original_text_weight)
         p_simhash = Simhash(plagiarized_text_weight)
-        max_hashbit = max(len(bin(o_simhash.value)), len(bin(p_simhash.value)))
+        max_hash_len = max(len(bin(o_simhash.value)), len(bin(p_simhash.value)))
         # Hamming distance
-        distince = o_simhash.distance(p_simhash)
-        print(f"The hamming distance(they are similar when the value is less than 4): {distince}")
-        similar = 1 - distince / max_hashbit
+        distance = o_simhash.distance(p_simhash)
+        print(f"The hamming distance(they are similar when the value is less than 4): {distance}")
+        similar = 1 - distance / max_hash_len
         return similar
     except TypeError:
         print("I say list! You understand?")
@@ -112,16 +112,16 @@ def caculate_similarity(original_text_weight, plagiarized_text_weight):
         return EmptyException
 
 
-def main(args):
+def main(a):
     # Get the parameters of the command line
     # Note that the first one is the script name
-    original_text_path = args[1]
-    plagiarized_text_path = args[2]
-    output_text_path = args[3]
+    original_text_path = a[1]
+    plagiarized_text_path = a[2]
+    output_text_path = a[3]
 
     try:
         # Check whether the parameter is a character type
-        are_all_string = all(isinstance(item, str) for item in args)
+        are_all_string = all(isinstance(item, str) for item in a)
         if not are_all_string:
             raise TypeError
     except TypeError:
@@ -132,13 +132,13 @@ def main(args):
     original_textLweight = participle(read_file(original_text_path))
     plagiarized_textLweight = participle(read_file(plagiarized_text_path))
     
-    # caculate similarity
+    # calculate similarity
     similarity = caculate_similarity(original_textLweight, plagiarized_textLweight)
 
     # Output the result to the specified file
     save_file(output_text_path, similarity)
     
-    return 1 # succeed mark
+    return 1  # succeed mark
 
 
 if __name__ == '__main__':

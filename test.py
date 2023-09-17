@@ -13,15 +13,15 @@ class TestStringMethods(unittest.TestCase):
         with self.assertRaises(EmptyException):
             check_empty('')
 
-    def test_caculate_type(self):
+    def test_calculate_type(self):
         s = caculate_similarity('元氏人', '什么档次')
         self.assertEqual(s, TypeError)
 
-    def test_caculate_ouput(self):
+    def test_calculate_output(self):
         s = caculate_similarity([('呵呵', 0.5), ('桀桀', 0.5)], [('在吗', 0.2), ('消愁', 0.8)])
         self.assertEqual(s, 0.48484848484848486)  # Output should be 0.48484848484848486
 
-    def test_caculate_empty(self):
+    def test_calculate_empty(self):
         s = caculate_similarity([], [])
         self.assertEqual(s, EmptyException)
 
